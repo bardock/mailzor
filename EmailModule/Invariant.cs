@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace EmailModule
 {
     using System;
@@ -18,6 +21,14 @@ namespace EmailModule
             if (string.IsNullOrEmpty(target))
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture, "\"{0}\" cannot be blank.", parameterName));
+            }
+        }
+
+        public static void IsNotEmpty<T>(IEnumerable<KeyValuePair<string, T>> templates, string message)
+        {
+            if (!templates.Any())
+            {
+                throw new ArgumentException(string.Format(CultureInfo.CurrentUICulture, message));
             }
         }
     }

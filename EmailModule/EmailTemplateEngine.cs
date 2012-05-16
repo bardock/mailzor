@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace EmailModule
 {
     using System;
@@ -17,13 +19,13 @@ namespace EmailModule
         public const string DefaultHtmlTemplateSuffix = "html";
         public const string DefaultTextTemplateSuffix = "text";
 
-        private const string NamespaceName = "EmailModule";
+        private const string NamespaceName = "TempCompiledTemplates";
 
-        private static readonly Dictionary<string, IEnumerable<KeyValuePair<string, Type>>> typeMapping = new Dictionary<string, IEnumerable<KeyValuePair<string, Type>>>(StringComparer.OrdinalIgnoreCase);
-        private static readonly ReaderWriterLockSlim syncLock = new ReaderWriterLockSlim();
+        private static readonly Dictionary<string, IEnumerable<KeyValuePair<string, Type>>> TypeMapping = new Dictionary<string, IEnumerable<KeyValuePair<string, Type>>>(StringComparer.OrdinalIgnoreCase);
+        private static readonly ReaderWriterLockSlim SyncLock = new ReaderWriterLockSlim();
 
-        private static readonly string[] referencedAssemblies = BuildReferenceList().ToArray();
-        private static readonly RazorTemplateEngine razorEngine = CreateRazorEngine();
+        private static readonly string[] ReferencedAssemblies = BuildReferenceList().ToArray();
+        private static readonly RazorTemplateEngine RazorEngine = CreateRazorEngine();
 
         public EmailTemplateEngine(IEmailTemplateContentReader contentReader) : this(contentReader, DefaultHtmlTemplateSuffix, DefaultTextTemplateSuffix, DefaultSharedTemplateSuffix)
         {
@@ -52,7 +54,9 @@ namespace EmailModule
         {
             Invariant.IsNotBlank(templateName, "templateName");
 
-            var templates = CreateTemplateInstances(templateName);
+            var templates = CreateTemplateInstances(templateName).ToList();
+
+            Invariant.IsNotEmpty(templates, string.Format(CultureInfo.CurrentUICulture, "was unable to find a matching templates with name: \"{0}\" .", templateName));
 
             foreach (var pair in templates)
             {
@@ -121,7 +125,7 @@ namespace EmailModule
         {
             var assemblyName = NamespaceName + "." + Guid.NewGuid().ToString("N") + ".dll";
 
-            var templateResults = templates.Select(pair => razorEngine.GenerateCode(new StringReader(pair.Value), pair.Key, NamespaceName, pair.Key + ".cs")).ToList();
+            var templateResults = templates.Select(pair => RazorEngine.GenerateCode(new StringReader(pair.Value), pair.Key, NamespaceName, pair.Key + ".cs")).ToList();
 
             if (templateResults.Any(result => result.ParserErrors.Any()))
             {
@@ -132,7 +136,7 @@ namespace EmailModule
 
             using (var codeProvider = new CSharpCodeProvider())
             {
-                var compilerParameter = new CompilerParameters(referencedAssemblies, assemblyName, false)
+                var compilerParameter = new CompilerParameters(ReferencedAssemblies, assemblyName, false)
                                             {
                                                 GenerateInMemory = true,
                                                 CompilerOptions = "/optimize"
@@ -190,7 +194,7 @@ namespace EmailModule
 
         private static IEnumerable<string> BuildReferenceList()
         {
-            string currentAssemblyLocation = typeof(EmailTemplateEngine).Assembly.CodeBase.Replace("file:///", string.Empty).Replace("/", "\\");
+            var currentAssemblyLocation = typeof(EmailTemplateEngine).Assembly.CodeBase.Replace("file:///", string.Empty).Replace("/", "\\");
 
             return new List<string>
                        {
@@ -204,38 +208,40 @@ namespace EmailModule
 
         private IEnumerable<KeyValuePair<string, IEmailTemplate>> CreateTemplateInstances(string templateName)
         {
-            return GetTemplateTypes(templateName).Select(pair => new KeyValuePair<string, IEmailTemplate>(pair.Key, (IEmailTemplate)Activator.CreateInstance(pair.Value)))
-                                                 .ToList();
+            return GetTemplateTypes(templateName)
+                .Select(pair => new KeyValuePair<string, IEmailTemplate>(pair.Key, (IEmailTemplate)Activator.CreateInstance(pair.Value)))
+                .ToList();
         }
 
         private IEnumerable<KeyValuePair<string, Type>> GetTemplateTypes(string templateName)
         {
             IEnumerable<KeyValuePair<string, Type>> templateTypes;
 
-            syncLock.EnterUpgradeableReadLock();
+            SyncLock.EnterUpgradeableReadLock();
 
             try
             {
-                if (!typeMapping.TryGetValue(templateName, out templateTypes))
+                if (!TypeMapping.TryGetValue(templateName, out templateTypes))
                 {
-                    syncLock.EnterWriteLock();
+                    SyncLock.EnterWriteLock();
 
                     try
                     {
                         templateTypes = GenerateTemplateTypes(templateName);
-                        typeMapping.Add(templateName, templateTypes);
+                        TypeMapping.Add(templateName, templateTypes);
                     }
                     finally
                     {
-                        syncLock.ExitWriteLock();
+                        SyncLock.ExitWriteLock();
                     }
                 }
             }
             finally
             {
-                syncLock.ExitUpgradeableReadLock();
+                SyncLock.ExitUpgradeableReadLock();
             }
 
+            Invariant.IsNotEmpty(templateTypes, "Template types from assembly were not found - they were possibly not added as 'Content' (copy to output not required)");
             return templateTypes;
         }
 

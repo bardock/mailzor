@@ -1,9 +1,7 @@
 namespace EmailModule
 {
-    public class EmailSubsystem
+    public class EmailSubsystem : IEmailSystem
     {
-        public const string SendWelcomeMailTemplateName = "SendWelcomeMail";
-
         public EmailSubsystem(string fromAddress, IEmailTemplateEngine templateEngine, IEmailSender sender)
         {
             Invariant.IsNotBlank(fromAddress, "fromAddress");
@@ -21,18 +19,14 @@ namespace EmailModule
 
         protected string FromAddress { get; private set; }
 
-        public virtual void SendWelcomeMail(string name, string password, string email)
+        /// <summary>
+        /// Send a mail message
+        /// </summary>
+        /// <param name="tempalteName">The template</param>
+        /// <param name="model">The data</param>
+        public virtual void SendMail(string tempalteName, object model)
         {
-            var model = new
-                        {
-                            From = FromAddress,
-                            To = email,
-                            Name = name,
-                            Password = password,
-                            LogOnUrl = "http://mycompany.com/logon"
-                        };
-
-            var mail = TemplateEngine.Execute(SendWelcomeMailTemplateName, model);
+            var mail = TemplateEngine.Execute(tempalteName, model);
 
             Sender.Send(mail);
         }

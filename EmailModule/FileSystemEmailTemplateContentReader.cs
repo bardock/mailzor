@@ -10,6 +10,10 @@ namespace EmailModule
         {
         }
 
+        public FileSystemEmailTemplateContentReader(string templateDirectory) : this(templateDirectory, ".cshtml")
+        {
+        }
+
         public FileSystemEmailTemplateContentReader(string templateDirectory, string fileExtension)
         {
             Invariant.IsNotBlank(templateDirectory, "templateDirectory");

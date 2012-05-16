@@ -1,0 +1,96 @@
+<stylecopresultscache>
+  <version>11</version>
+  <project key="1700191391">
+    <configuration>DEBUG;TRACE</configuration>
+  </project>
+  <sourcecode name="EmailTemplateEngine.cs" parser="StyleCop.CSharp.CsParser">
+    <settings>
+      <timestamp>05/07/2012 09:27:02</timestamp>
+      <milliseconds>52</milliseconds>
+    </settings>
+    <timestamp>05/16/2012 10:57:48</timestamp>
+    <milliseconds>660</milliseconds>
+    <violations>
+      <violation namespace="StyleCop.CSharp.DocumentationRules" rule="FileMustHaveHeader" ruleCheckId="SA1633">
+        <context>The file has no header, the header Xml is invalid, or the header is not located at the top of the file.</context>
+        <line>1</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.OrderingRules" rule="UsingDirectivesMustBePlacedWithinNamespace" ruleCheckId="SA1200">
+        <context>All using directives must be placed inside of the namespace.</context>
+        <line>1</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to ContentReader must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>32</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to ContentReader must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>39</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to SharedTemplateSuffix must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>40</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to HtmlTemplateSuffix must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>41</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to TextTemplateSuffix must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>42</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to CreateTemplateInstances must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>57</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to WrapModel must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>63</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to GetTemplateTypes must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>211</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to GenerateTemplateTypes must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>230</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to SharedTemplateSuffix must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>252</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to HtmlTemplateSuffix must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>253</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to TextTemplateSuffix must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>254</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to ContentReader must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>261</line>
+        <warning>False</warning>
+      </violation>
+      <violation namespace="StyleCop.CSharp.ReadabilityRules" rule="PrefixLocalCallsWithThis" ruleCheckId="SA1101">
+        <context>The call to GenerateAssembly must begin with the 'this.' prefix to indicate that the item is a member of the class.</context>
+        <line>269</line>
+        <warning>False</warning>
+      </violation>
+    </violations>
+  </sourcecode>
+</stylecopresultscache>

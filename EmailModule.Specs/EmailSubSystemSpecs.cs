@@ -25,10 +25,11 @@ namespace EmailModule.Specs
         {
             var email = new Email();
 
-            templateEngine.Setup(e => e.Execute(EmailSubsystem.SendWelcomeMailTemplateName, arg.IsAny<object>())).Returns(email).Verifiable();
+            templateEngine.Setup(e => e.Execute("TestTemplate", arg.IsAny<object>())).Returns(email).Verifiable();
+
             sender.Setup(s => s.Send(email)).Verifiable();
 
-            subSystem.SendWelcomeMail("Jon Smith", "@abcd1234", "jon@smit.com");
+            subSystem.SendMail("TestTemplate", new { From = "", To = "" });
         };
 
         it should_use_correct_template = () => templateEngine.Verify();
