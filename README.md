@@ -16,11 +16,12 @@ The original idea for this is from , with the
 
 	IEmailSystem mailzor;
 	
-	mailzor.SendMail(new NewTaskNotificationMessage
-	                    {
-	                        To = "nick@adcastgroup.com",
-	                        From = "daedalus@adcastgroup.com"
-	                    });
+	mailzor.SendMail(
+		new TaskNotificationMessage
+                    {
+                        To = "email@domain.com",
+                        From = "source@domain.com"
+                    });
 
 
 ## IoC Wireup
