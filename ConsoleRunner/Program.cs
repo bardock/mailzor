@@ -6,30 +6,39 @@ using EmailModule;
 
 namespace ConsoleRunner
 {
-    internal class Program
+
+    public class Program
     {
         public static void Main()
         {
-            IEmailTemplateContentReader templateReader = new FileSystemEmailTemplateContentReader(@"..\..\Templates");
+            var loc = @"..\..\..\Templates";
+
+            Execute(loc);
+
+            Console.WriteLine("Mail delivered, check the outbox folder (if using the local file drop), or check recipient email (if using real smtp).");
+            Console.Read();
+        }
+
+        public static void Execute(String templateLocation)
+        {
+            IEmailTemplateContentReader templateReader = new FileSystemEmailTemplateContentReader(templateLocation);
             IEmailTemplateEngine templateEngine = new EmailTemplateEngine(templateReader);
 
             IEmailSender sender = new EmailSender
             {
                 // replace with RealSmtpClient() to test with a real mail server
-                CreateClientFactory = () => new SmtpClientWrapper(CreateSmtpClientWhichDropsInLocalFileSystem())
+                CreateClientFactory = () => new SmtpClientWrapper(RealSmtpClient())
             };
 
-            var subsystem = new EmailSubsystem("someone@somewhere.com", templateEngine, sender);
+            var subsystem = new EmailSubsystem("daedalus@adcastgroup.com", templateEngine, sender);
 
             subsystem.SendMail(
-                "TaskNotificationMessage",
-                new TaskNotificationMessage
-                    {
-                        To = "someone@somewhere.com", From = "source@somewhere.com"
-                    });
-
-            Console.WriteLine("Mail delivered, check the outbox folder.");
-            Console.Read();
+                "NewTaskEmailCommand",
+                new NewTaskEmailCommand
+                {
+                    To = "nick@adcastgroup.com",
+                    From = "daedalus@adcastgroup.com"
+                });
         }
 
         private static SmtpClient RealSmtpClient()
@@ -55,5 +64,16 @@ namespace ConsoleRunner
                 UseDefaultCredentials = true
             };
         }
+    }
+
+    public class NewTaskEmailCommand
+    {
+        public string From { get; set; }
+
+        public string To { get; set; }
+
+        public string Name { get; set; }
+
+        public string VerificationUri { get; set; }
     }
 }

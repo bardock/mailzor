@@ -241,7 +241,10 @@ namespace EmailModule
                 SyncLock.ExitUpgradeableReadLock();
             }
 
-            Invariant.IsNotEmpty(templateTypes, "Template types from assembly were not found - they were possibly not added as 'Content' (copy to output not required)");
+            Invariant.IsNotEmpty(
+                templateTypes, 
+                string.Format(CultureInfo.CurrentUICulture, "Templates could not be loaded, check the name supplied matches the filename, missing tempalte was: {0}", templateName));
+
             return templateTypes;
         }
 

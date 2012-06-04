@@ -18,4 +18,15 @@ namespace ConsoleRunner
 
         public string LogOnUrl { get; set; }
     }
+
+    /*public class NewTaskEmailCommand
+    {
+        public string From { get; set; }
+
+        public string To { get; set; }
+
+        public string Name { get; set; }
+
+        public string VerificationUri { get; set; }
+    }*/
 }
