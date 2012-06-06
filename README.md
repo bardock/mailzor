@@ -12,7 +12,13 @@ The original idea for this is from , with the
    - [EmailTemplate.zip]( http://media.kazimanzurrashid.s3.amazonaws.com/EmailTemplate.zip )
 
 
-# usage
+## NuGet
+
+ Get it from [nuget.org/packages/mailzor](https://nuget.org/packages/mailzor) or via Package Manager Console
+ 
+  > *PM> Install-Package mailzor*
+
+# Usage
 
 	IEmailSystem mailzor;
 	

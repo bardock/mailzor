@@ -18,7 +18,8 @@ namespace EmailModule
 
         public void Send(Email email)
         {
-            Invariant.IsNotNull(email, "email");
+            Invariant.IsNotNull(email, "email element was unable to be built correctly");
+            Invariant.IsNotNull(email.From, "The supplied 'From' address cannot be null.");
 
             using (var message = CreateDefaultMailMessageFactory()(email))
             {
