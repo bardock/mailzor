@@ -12,7 +12,11 @@ The original idea for this is from , with the
    - [EmailTemplate.zip]( http://media.kazimanzurrashid.s3.amazonaws.com/EmailTemplate.zip )
 
 
-# usage
+## NuGet
+
+ Package **Coming soon** sorry it's not up yet.
+
+# Usage
 
 	IEmailSystem mailzor;
 	
