@@ -14,7 +14,9 @@ The original idea for this is from , with the
 
 ## NuGet
 
- Package **Coming soon** sorry it's not up yet.
+ Get it from [nuget.org/packages/mailzor](https://nuget.org/packages/mailzor) or via Package Manager Console
+ 
+  > *PM> Install-Package mailzor*
 
 # Usage
 
