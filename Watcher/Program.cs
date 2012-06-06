@@ -11,6 +11,23 @@ namespace Watcher
     {
         static void Main(string[] args)
         {
+            string line;
+            var f = new StreamReader(@"C:\Users\nickjosevski.ACMELBDC\Desktop\w\words.txt");
+            var outputfile = new StreamWriter(@"C:\Users\nickjosevski.ACMELBDC\Desktop\w\lessthan3.txt");
+
+            while((line = f.ReadLine()) != null)
+            {
+                if(line.Length <= 3)
+                {
+                    Console.WriteLine(line);
+                    outputfile.WriteLine(line);
+                }
+            }
+
+            Console.WriteLine("done...");
+            Console.ReadLine();
+            return;
+
             var loc = @"C:\Users\nickjosevski.ACMELBDC\AppData\Local\Temp";
             var ext = @"*.cs";
 
