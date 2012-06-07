@@ -1,8 +1,6 @@
 # mailzor
 
-Is a basic utility class to help produce 
-
-Using the Razor view engine to create email templates, quickly pluggable into your .NET app.
+Is a basic utility class to help generate and send emails using the Razor view engine to create email templates, quickly pluggable into your .NET app.
 
 The original idea for this is from , with the 
 
@@ -88,8 +86,11 @@ Using an Autofac module (or just using this registration code in your compositio
  - Some additional template loading checking, to ensure they're available and that it reports when it can't find them (in particular which template it couldn't find).
  
 ## Troubleshooting
- - Because this library takes a fixed dependency on a version of 'System.Web.Razor' version: 2.0.20126.16343 so if you see an exception that's references a 'WriteAttribute' check for
+ - Because this library takes a fixed dependency on a version of 'System.Web.Razor' version: 2.0.20126.16343 so if you see an exception that's references a 'WriteAttribute' check for [exception image](http://yfrog.com/kksyjsp)
    - *.config binding redirects for System.Web.Razor
    - Any conflicting versions of System.Web.Razor
  
 	> 	The name 'WriteAttribute' does not exist in the current context
+	
+## License
+Licensed under the MIT license.
