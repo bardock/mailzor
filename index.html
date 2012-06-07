@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Mailzor by NickJosevski</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Mailzor</h1>
+        <p>Using the Razor view engine to create email templates, quickly pluggable into your .NET app.</p>
+        <p class="view"><a href="https://github.com/NickJosevski/mailzor">View the Project on GitHub <small>NickJosevski/mailzor</small></a></p>
+        <ul>
+          <li><a href="https://github.com/NickJosevski/mailzor/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/NickJosevski/mailzor/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/NickJosevski/mailzor">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>mailzor</h1>
+
+<p>Is a basic utility class to help generate and send emails using the Razor view engine to create email templates, quickly pluggable into your .NET app.</p>
+
+<p>The original idea for this is from , with the </p>
+
+<ul>
+<li>Original blog post covering it here:
+
+<ul>
+<li><a href="http://kazimanzurrashid.com/posts/use-razor-for-email-template-outside-asp-dot-net-mvc">kazimanzurrashid.com/use-razor-for-email-template-outside-asp-dot-net-mvc</a></li>
+</ul>
+</li>
+<li>Original code
+
+<ul>
+<li><a href="http://media.kazimanzurrashid.s3.amazonaws.com/EmailTemplate.zip">EmailTemplate.zip</a></li>
+</ul>
+</li>
+</ul><h3>Limitations</h3>
+
+<p>One right now is compiled dependency on System.Web.Razor 2.0.20126.16343 which is bundled with the package, see troubleshooting section at the bottom.</p>
+
+<h2>NuGet</h2>
+
+<p>Get it from <a href="https://nuget.org/packages/mailzor">nuget.org/packages/mailzor</a> or via Package Manager Console</p>
+
+<blockquote>
+<p><em>PM&gt; Install-Package mailzor</em></p>
+</blockquote>
+
+<h1>Usage</h1>
+
+<pre><code>IEmailSystem mailzor;
+
+mailzor.SendMail(
+    new TaskNotificationMessage
+                {
+                    To = "email@domain.com",
+                    From = "source@domain.com"
+                });
+</code></pre>
+
+<h2>IoC Wireup</h2>
+
+<p>Using an Autofac module (or just using this registration code in your composition root) to wire up the dependencies for the <code>mailzor</code> utility.</p>
+
+<pre><code>builder.RegisterModule(new MailzorModule 
+    { 
+        TemplatesDirectory = @"..\Templates",
+        SmtpServerIp = "10.0.0.99", // your smtp server
+        SmtpServerPort = 25
+    });
+</code></pre>
+
+<h3>Autofac</h3>
+
+<pre><code>public class MailzorModule : Autofac.Module
+{
+    public string TemplatesDirectory { get; set; }
+    public string SmtpServerIp { get; set; }
+    public int SmtpServerPort { get; set; }
+
+    protected override void Load(ContainerBuilder builder)
+    {
+        builder
+            .Register(
+                c =&gt; new FileSystemEmailTemplateContentReader(TemplatesDirectory))
+            .As&lt;IEmailTemplateContentReader&gt;();
+
+        builder
+            .RegisterType&lt;EmailTemplateEngine&gt;()
+            .As&lt;IEmailTemplateEngine&gt;();
+
+        builder
+            .Register(
+                c =&gt; new EmailSender
+                    {
+                        CreateClientFactory = () 
+                            =&gt; new SmtpClientWrapper(new SmtpClient(SmtpServerIp, SmtpServerPort))
+                    })
+            .As&lt;IEmailSender&gt;();
+
+        builder
+            .Register(
+                c =&gt; new EmailSubsystem(
+                    "sending@from-site.com", 
+                    c.Resolve&lt;IEmailTemplateEngine&gt;(), 
+                    c.Resolve&lt;IEmailSender&gt;()))
+            .As&lt;IEmailSystem&gt;();
+    }
+}
+</code></pre>
+
+<h2>Changes in this fork</h2>
+
+<ul>
+<li>A single entry point via <code>IEmailSystem</code>
+</li>
+<li>Send message via <code>SendMail</code> on <code>IEmailSystem</code>
+</li>
+<li>Some additional template loading checking, to ensure they're available and that it reports when it can't find them (in particular which template it couldn't find).</li>
+</ul><h2>Troubleshooting</h2>
+
+<ul>
+<li>
+<p>Because this library takes a fixed dependency on a version of 'System.Web.Razor' version: 2.0.20126.16343 so if you see an exception that's references a 'WriteAttribute' check for <a href="http://yfrog.com/kksyjsp">exception image</a></p>
+
+<ul>
+<li>*.config binding redirects for System.Web.Razor</li>
+<li>Any conflicting versions of System.Web.Razor</li>
+</ul>
+<blockquote>
+<p>The name 'WriteAttribute' does not exist in the current context</p>
+</blockquote>
+</li>
+</ul><h2>License</h2>
+
+<p>Licensed under the MIT license.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/NickJosevski">NickJosevski</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
