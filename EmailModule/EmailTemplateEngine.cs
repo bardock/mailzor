@@ -1,17 +1,44 @@
+using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Dynamic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+
+using Microsoft.CSharp;
 
 namespace EmailModule
 {
-    using System;
-    using System.CodeDom.Compiler;
-    using System.Collections.Generic;
-    using System.Dynamic;
-    using System.IO;
-    using System.Linq;
-    using System.Reflection;
-    using System.Threading;
-    using System.Web.Razor;
-    using Microsoft.CSharp;
+    public interface IDoWhatRazorDoes
+    {
+        SimplifiedParserResults GenerateCode(TextReader input);
+        SimplifiedParserResults GenerateCode(TextReader input, CancellationToken? cancelToken);
+        SimplifiedParserResults GenerateCode(TextReader input, string className, string rootNamespace, string sourceFileName);
+    }
+
+    public class SimplifiedParserResults
+    {
+        /// <summary>
+        /// The list of errors which occurred during parsing.
+        /// </summary>
+        public IList<AltRazorError> ParserErrors { get; private set; }
+
+        /// <summary>
+        /// The generated code
+        /// </summary>
+        public CodeCompileUnit GeneratedCode { get; private set; }
+    }
+
+    public class AltRazorError// : IEquatable<AltRazorError>
+    {
+        public string Location { get; set; }
+
+        public string Message { get; set; } 
+    }
 
     public class EmailTemplateEngine : IEmailTemplateEngine
     {
@@ -25,10 +52,13 @@ namespace EmailModule
         private static readonly ReaderWriterLockSlim SyncLock = new ReaderWriterLockSlim();
 
         private static readonly string[] ReferencedAssemblies = BuildReferenceList().ToArray();
-        private static readonly RazorTemplateEngine RazorEngine = CreateRazorEngine();
 
-        public EmailTemplateEngine(IEmailTemplateContentReader contentReader) : this(contentReader, DefaultHtmlTemplateSuffix, DefaultTextTemplateSuffix, DefaultSharedTemplateSuffix)
+        private readonly IDoWhatRazorDoes RazorEngine;// = CreateRazorEngine();
+
+        public EmailTemplateEngine(IEmailTemplateContentReader contentReader, IDoWhatRazorDoes razorEngine)
+            : this(contentReader, DefaultHtmlTemplateSuffix, DefaultTextTemplateSuffix, DefaultSharedTemplateSuffix)
         {
+            RazorEngine = razorEngine;
             ContentReader = contentReader;
         }
 
@@ -175,7 +205,7 @@ namespace EmailModule
             return new EmailTemplateModelWrapper(propertyMap);
         }
 
-        private static RazorTemplateEngine CreateRazorEngine()
+        /*private static RazorTemplateEngine CreateRazorEngine()
         {
             var host = new RazorEngineHost(new CSharpRazorCodeLanguage())
                            {
@@ -190,7 +220,7 @@ namespace EmailModule
             host.NamespaceImports.Add("System.Linq");
 
             return new RazorTemplateEngine(host);
-        }
+        }*/
 
         private static IEnumerable<string> BuildReferenceList()
         {

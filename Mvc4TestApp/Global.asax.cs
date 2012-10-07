@@ -1,11 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using System.Reflection;
+using System.Threading;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
+using System.Web.Razor;
 using System.Web.Routing;
+
+using Autofac;
+using Autofac.Integration.Mvc;
+
+using EmailModule;
 
 namespace Mvc4TestApp
 {
@@ -23,6 +33,87 @@ namespace Mvc4TestApp
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AuthConfig.RegisterAuth();
+
+            var container = BuildContainer();
+
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+        }
+
+        protected static IContainer BuildContainer()
+        {
+            var builder = new ContainerBuilder();
+
+            builder.RegisterControllers(Assembly.GetExecutingAssembly());
+
+            builder.RegisterModule(new MailzorModule
+            {
+                TemplatesDirectory = @"..\Templates",
+                SmtpServerIp = "127.0.0.1", // your smtp server
+                SmtpServerPort = 25
+            });
+
+            return builder.Build();
+        }
+    }
+
+    /*public interface IDoWhatRazorDoes
+    {
+        GeneratorResults GenerateCode(TextReader input);
+        GeneratorResults GenerateCode(TextReader input, CancellationToken? cancelToken);
+        GeneratorResults GenerateCode(TextReader input, string className, string rootNamespace, string sourceFileName);
+    }*/
+
+    public class MailzorModule : Autofac.Module
+    {
+        public string TemplatesDirectory { get; set; }
+        public string SmtpServerIp { get; set; }
+        public int SmtpServerPort { get; set; }
+
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder
+                .Register(
+                    c => new FileSystemEmailTemplateContentReader(TemplatesDirectory))
+                .As<IEmailTemplateContentReader>();
+
+            builder
+                .RegisterType<EmailTemplateEngine>()
+                .As<IEmailTemplateEngine>();
+
+            builder.Register(
+                c =>
+                    {
+                        var host = new RazorEngineHost(new CSharpRazorCodeLanguage())
+                            {
+                                DefaultBaseClass = typeof(EmailTemplate).FullName,
+                                DefaultNamespace = "TempCompiledTemplates"
+                            };
+
+                        host.NamespaceImports.Add("System");
+                        host.NamespaceImports.Add("System.Collections");
+                        host.NamespaceImports.Add("System.Collections.Generic");
+                        host.NamespaceImports.Add("System.Dynamic");
+                        host.NamespaceImports.Add("System.Linq");
+
+                        return new RazorTemplateEngine(host);
+                    }).As<IDoWhatRazorDoes>();
+
+            builder
+                .Register(
+                    c => new EmailSender
+                    {
+                        CreateClientFactory = ()
+                            => new SmtpClientWrapper(new SmtpClient(SmtpServerIp, SmtpServerPort))
+                    })
+                .As<IEmailSender>();
+
+            builder
+                .Register(
+                    c => new EmailSubsystem(
+                        "sending@from-site.com",
+                        c.Resolve<IEmailTemplateEngine>(),
+                        c.Resolve<IEmailSender>()))
+                .As<IEmailSystem>();
         }
     }
 }
