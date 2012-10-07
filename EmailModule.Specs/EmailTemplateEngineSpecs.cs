@@ -15,7 +15,7 @@ namespace EmailModule.Specs
 
         Because of = () =>
         {
-            exception = Catch.Exception(() => new EmailTemplateEngine(new Mock<IEmailTemplateContentReader>().Object).Execute(string.Empty));
+            exception = Catch.Exception(() => new EmailTemplateEngine(new Mock<IEmailTemplateContentReader>().Object,).Execute(string.Empty));
         };
 
         it should_throw_exception = () => exception.ShouldBeOfType<ArgumentException>();

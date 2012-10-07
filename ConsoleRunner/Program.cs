@@ -22,7 +22,9 @@ namespace ConsoleRunner
         public static void Execute(String templateLocation)
         {
             IEmailTemplateContentReader templateReader = new FileSystemEmailTemplateContentReader(templateLocation);
-            IEmailTemplateEngine templateEngine = new EmailTemplateEngine(templateReader);
+            IEmailTemplateEngine templateEngine = new EmailTemplateEngine(templateReader, null);
+
+            throw new NotImplementedException("TODO: 2nd param on EmailTemplateEngine is required");
 
             IEmailSender sender = new EmailSender
             {

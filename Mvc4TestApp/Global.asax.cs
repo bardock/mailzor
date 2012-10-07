@@ -63,6 +63,61 @@ namespace Mvc4TestApp
         GeneratorResults GenerateCode(TextReader input, string className, string rootNamespace, string sourceFileName);
     }*/
 
+    public class RazorWrapper : IDoWhatRazorDoes
+    {
+        private static readonly RazorTemplateEngine RazorEngine = CreateRazorEngine();
+
+        private static RazorTemplateEngine CreateRazorEngine()
+        {
+            var host = new RazorEngineHost(new CSharpRazorCodeLanguage())
+            {
+                DefaultBaseClass = typeof(EmailTemplate).FullName,
+                DefaultNamespace = "TempCompiledTemplates"
+            };
+
+            host.NamespaceImports.Add("System");
+            host.NamespaceImports.Add("System.Collections");
+            host.NamespaceImports.Add("System.Collections.Generic");
+            host.NamespaceImports.Add("System.Dynamic");
+            host.NamespaceImports.Add("System.Linq");
+
+            return new RazorTemplateEngine(host);
+        }
+
+        public SimplifiedParserResults GenerateCode(TextReader input)
+        {
+            return SimplifiedResults(RazorEngine.GenerateCode(input));
+        }
+
+        public SimplifiedParserResults GenerateCode(TextReader input, CancellationToken? cancelToken)
+        {
+            return SimplifiedResults(RazorEngine.GenerateCode(input, cancelToken));
+        }
+
+        public SimplifiedParserResults GenerateCode(TextReader input, string className, string rootNamespace, string sourceFileName)
+        {
+            return SimplifiedResults(RazorEngine.GenerateCode(input, className, rootNamespace, sourceFileName));
+        }
+
+        private SimplifiedParserResults SimplifiedResults(GeneratorResults generatorResults)
+        {
+            var simplifiedResults = new SimplifiedParserResults
+            {
+                ParserErrors = new List<AltRazorError>()
+            };
+
+            generatorResults.ParserErrors.ToList()
+                .ForEach(e => simplifiedResults.ParserErrors.Add(new AltRazorError
+                {
+                    Location = e.Location.ToString(),
+                    Message = e.Message
+                }
+                    ));
+
+            return simplifiedResults;
+        }
+    }
+
     public class MailzorModule : Autofac.Module
     {
         public string TemplatesDirectory { get; set; }
@@ -80,23 +135,7 @@ namespace Mvc4TestApp
                 .RegisterType<EmailTemplateEngine>()
                 .As<IEmailTemplateEngine>();
 
-            builder.Register(
-                c =>
-                    {
-                        var host = new RazorEngineHost(new CSharpRazorCodeLanguage())
-                            {
-                                DefaultBaseClass = typeof(EmailTemplate).FullName,
-                                DefaultNamespace = "TempCompiledTemplates"
-                            };
-
-                        host.NamespaceImports.Add("System");
-                        host.NamespaceImports.Add("System.Collections");
-                        host.NamespaceImports.Add("System.Collections.Generic");
-                        host.NamespaceImports.Add("System.Dynamic");
-                        host.NamespaceImports.Add("System.Linq");
-
-                        return new RazorTemplateEngine(host);
-                    }).As<IDoWhatRazorDoes>();
+            builder.RegisterType<RazorWrapper>().As<IDoWhatRazorDoes>();
 
             builder
                 .Register(

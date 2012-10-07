@@ -25,12 +25,12 @@ namespace EmailModule
         /// <summary>
         /// The list of errors which occurred during parsing.
         /// </summary>
-        public IList<AltRazorError> ParserErrors { get; private set; }
+        public IList<AltRazorError> ParserErrors { get; set; }
 
         /// <summary>
         /// The generated code
         /// </summary>
-        public CodeCompileUnit GeneratedCode { get; private set; }
+        public CodeCompileUnit GeneratedCode { get; set; }
     }
 
     public class AltRazorError// : IEquatable<AltRazorError>
