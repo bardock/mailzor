@@ -1,22 +1,44 @@
 # mailzor
 
-Is a basic utility class to help generate and send emails using the Razor view engine to create email templates, quickly pluggable into your .NET app.
+Mailzor is a basic utility library to help generate and send emails using the Razor view engine to populate email templates, designed to be quickly pluggable into your .NET app.
 
-The original idea for this is from , with the 
+The original idea for this is from [Kazi Manzur Rashid](https://twitter.com/manzurrashid), with the...
 
  - Original blog post covering it here:
   - [kazimanzurrashid.com/use-razor-for-email-template-outside-asp-dot-net-mvc]( http://kazimanzurrashid.com/posts/use-razor-for-email-template-outside-asp-dot-net-mvc )
  - Original code
    - [EmailTemplate.zip]( http://media.kazimanzurrashid.s3.amazonaws.com/EmailTemplate.zip )
 
-### Limitations
-  One right now is compiled dependency on System.Web.Razor 2.0.20126.16343 which is bundled with the package, see troubleshooting section at the bottom.
+## This fork
+
+Is about making it easier to get up and running, via a nuget package and support for IoC wireup.
+
+ - A single entry point via `IEmailSystem`
+ - Send message via `SendMail` on `IEmailSystem`
+ - Some additional template loading checking, to ensure they're available and that it reports when it can't find them (in particular which template it couldn't find).
 
 ## NuGet
 
+ **Version 1.0.0.10**
+ 
  Get it from [nuget.org/packages/mailzor](https://nuget.org/packages/mailzor) or via Package Manager Console
  
   > *PM> Install-Package mailzor*
+
+## Testing
+
+In the repository open \ExperienceTesting\Mvc4TestApp\Mvc4TestApp.sln - it makes use of the nuget package. It's also an example of the MailzorModule Autofac wireup logic.
+
+Have [smpt4dev](http://smtp4dev.codeplex.com/) running or configure it to a real mail server and see it deliver a test message.
+
+ - Functions with:
+   - Razor 1.0 in ASP.NET MVC 3
+   - Razor 2.0 in ASP.NET MVC 4
+
+## Building from source
+
+Run build.bat which calls out to a [psake](http://en.wikipedia.org/wiki/Psake) script `mailzor-build.ps1`. The dependant Razor assembly will be ilmerged as part of the build.
+
 
 # Usage
 
@@ -37,7 +59,7 @@ Using an Autofac module (or just using this registration code in your compositio
 	builder.RegisterModule(new MailzorModule 
 		{ 
 			TemplatesDirectory = @"..\Templates",
-			SmtpServerIp = "10.0.0.99", // your smtp server
+			SmtpServerIp = "127.0.0.1", // your smtp server
 			SmtpServerPort = 25
 		});
 
@@ -79,18 +101,13 @@ Using an Autofac module (or just using this registration code in your compositio
 		}
 	}
 
-## Changes in this fork
+## Older version
+ 
+If you tried this prior to 1.0.0.10 there was an issue with incompatible razor versions, more info [here](https://github.com/NickJosevski/mailzor/blob/master/PriorBugs.md).
 
- - A single entry point via `IEmailSystem`
- - Send message via `SendMail` on `IEmailSystem`
- - Some additional template loading checking, to ensure they're available and that it reports when it can't find them (in particular which template it couldn't find).
- 
-## Troubleshooting
- - Because this library takes a fixed dependency on a version of 'System.Web.Razor' version: 2.0.20126.16343 so if you see an exception that's references a 'WriteAttribute' check for [exception image](http://yfrog.com/kksyjsp)
-   - *.config binding redirects for System.Web.Razor
-   - Any conflicting versions of System.Web.Razor
- 
-	> 	The name 'WriteAttribute' does not exist in the current context
-	
 ## License
 Licensed under the MIT license.
+
+
+
+

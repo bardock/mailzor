@@ -6,7 +6,6 @@ using EmailModule;
 
 namespace ConsoleRunner
 {
-
     public class Program
     {
         public static void Main()
@@ -30,21 +29,21 @@ namespace ConsoleRunner
                 CreateClientFactory = () => new SmtpClientWrapper(RealSmtpClient())
             };
 
-            var subsystem = new EmailSubsystem("daedalus@adcastgroup.com", templateEngine, sender);
+            var subsystem = new EmailSubsystem("source@somedomain.com", templateEngine, sender);
 
             subsystem.SendMail(
                 "NewTaskEmailCommand",
                 new NewTaskEmailCommand
                 {
-                    To = "nick@adcastgroup.com",
-                    From = "daedalus@adcastgroup.com"
+                    To = "test@somedomain.com",
+                    From = "source@somedomain.com"
                 });
         }
 
         private static SmtpClient RealSmtpClient()
         {
             // replace this with your own mail server
-            return new SmtpClient("10.1.0.82", 25);
+            return new SmtpClient("127.0.0.1", 25);
         }
 
         private static SmtpClient CreateSmtpClientWhichDropsInLocalFileSystem()
