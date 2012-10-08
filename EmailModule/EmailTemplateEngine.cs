@@ -51,13 +51,16 @@ namespace EmailModule
         private static readonly Dictionary<string, IEnumerable<KeyValuePair<string, Type>>> TypeMapping = new Dictionary<string, IEnumerable<KeyValuePair<string, Type>>>(StringComparer.OrdinalIgnoreCase);
         private static readonly ReaderWriterLockSlim SyncLock = new ReaderWriterLockSlim();
 
-        private static readonly string[] ReferencedAssemblies = BuildReferenceList().ToArray();
+        //private static readonly string[] ReferencedAssemblies = BuildReferenceList().ToArray();
+        private readonly string[] ReferencedAssemblies;// = BuildReferenceList().ToArray();
 
         private readonly IDoWhatRazorDoes RazorEngine;// = CreateRazorEngine();
+        //private readonly RazorTemplateEngine RazorEngine = CreateRazorEngine();
 
-        public EmailTemplateEngine(IEmailTemplateContentReader contentReader, IDoWhatRazorDoes razorEngine)
+        public EmailTemplateEngine(IEmailTemplateContentReader contentReader, IDoWhatRazorDoes razorEngine, IEnumerable<string> refAssemblies)
             : this(contentReader, DefaultHtmlTemplateSuffix, DefaultTextTemplateSuffix, DefaultSharedTemplateSuffix)
         {
+            ReferencedAssemblies = refAssemblies.ToArray();
             RazorEngine = razorEngine;
             ContentReader = contentReader;
         }
@@ -167,16 +170,20 @@ namespace EmailModule
             using (var codeProvider = new CSharpCodeProvider())
             {
                 var compilerParameter = new CompilerParameters(ReferencedAssemblies, assemblyName, false)
-                                            {
-                                                GenerateInMemory = true,
-                                                CompilerOptions = "/optimize"
-                                            };
+                    {
+                        GenerateInMemory = true, 
+                        CompilerOptions = "/optimize"
+                    };
 
-                var compilerResults = codeProvider.CompileAssemblyFromDom(compilerParameter, templateResults.Select(r => r.GeneratedCode).ToArray());
+                var compilerResults = codeProvider.CompileAssemblyFromDom(
+                    compilerParameter, templateResults.Select(r => r.GeneratedCode).ToArray());
 
                 if (compilerResults.Errors.HasErrors)
                 {
-                    var compileExceptionMessage = string.Join(Environment.NewLine + Environment.NewLine, compilerResults.Errors.OfType<CompilerError>().Where(ce => !ce.IsWarning).Select(e => e.FileName + ":" + Environment.NewLine + e.ErrorText).ToArray());
+                    var compileExceptionMessage = string.Join(
+                        Environment.NewLine + Environment.NewLine,
+                        compilerResults.Errors.OfType<CompilerError>().Where(ce => !ce.IsWarning).Select(
+                            e => e.FileName + ":" + Environment.NewLine + e.ErrorText).ToArray());
 
                     throw new InvalidOperationException(compileExceptionMessage);
                 }
@@ -222,7 +229,7 @@ namespace EmailModule
             return new RazorTemplateEngine(host);
         }*/
 
-        private static IEnumerable<string> BuildReferenceList()
+        /*private static IEnumerable<string> BuildReferenceList()
         {
             var currentAssemblyLocation = typeof(EmailTemplateEngine).Assembly.CodeBase.Replace("file:///", string.Empty).Replace("/", "\\");
 
@@ -234,7 +241,7 @@ namespace EmailModule
                            "microsoft.csharp.dll",
                            currentAssemblyLocation
                        };
-        }
+        }*/
 
         private IEnumerable<KeyValuePair<string, IEmailTemplate>> CreateTemplateInstances(string templateName)
         {
