@@ -1,44 +1,17 @@
-using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Dynamic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-
-using Microsoft.CSharp;
 
 namespace EmailModule
 {
-    public interface IDoWhatRazorDoes
-    {
-        SimplifiedParserResults GenerateCode(TextReader input);
-        SimplifiedParserResults GenerateCode(TextReader input, CancellationToken? cancelToken);
-        SimplifiedParserResults GenerateCode(TextReader input, string className, string rootNamespace, string sourceFileName);
-    }
-
-    public class SimplifiedParserResults
-    {
-        /// <summary>
-        /// The list of errors which occurred during parsing.
-        /// </summary>
-        public IList<AltRazorError> ParserErrors { get; set; }
-
-        /// <summary>
-        /// The generated code
-        /// </summary>
-        public CodeCompileUnit GeneratedCode { get; set; }
-    }
-
-    public class AltRazorError// : IEquatable<AltRazorError>
-    {
-        public string Location { get; set; }
-
-        public string Message { get; set; } 
-    }
+    using System;
+    using System.CodeDom.Compiler;
+    using System.Collections.Generic;
+    using System.Dynamic;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading;
+    using System.Web.Razor;
+    using Microsoft.CSharp;
 
     public class EmailTemplateEngine : IEmailTemplateEngine
     {
@@ -51,17 +24,11 @@ namespace EmailModule
         private static readonly Dictionary<string, IEnumerable<KeyValuePair<string, Type>>> TypeMapping = new Dictionary<string, IEnumerable<KeyValuePair<string, Type>>>(StringComparer.OrdinalIgnoreCase);
         private static readonly ReaderWriterLockSlim SyncLock = new ReaderWriterLockSlim();
 
-        //private static readonly string[] ReferencedAssemblies = BuildReferenceList().ToArray();
-        private readonly string[] ReferencedAssemblies;// = BuildReferenceList().ToArray();
+        private static readonly string[] ReferencedAssemblies = BuildReferenceList().ToArray();
+        private static readonly RazorTemplateEngine RazorEngine = CreateRazorEngine();
 
-        private readonly IDoWhatRazorDoes RazorEngine;// = CreateRazorEngine();
-        //private readonly RazorTemplateEngine RazorEngine = CreateRazorEngine();
-
-        public EmailTemplateEngine(IEmailTemplateContentReader contentReader, IDoWhatRazorDoes razorEngine, IEnumerable<string> refAssemblies)
-            : this(contentReader, DefaultHtmlTemplateSuffix, DefaultTextTemplateSuffix, DefaultSharedTemplateSuffix)
+        public EmailTemplateEngine(IEmailTemplateContentReader contentReader) : this(contentReader, DefaultHtmlTemplateSuffix, DefaultTextTemplateSuffix, DefaultSharedTemplateSuffix)
         {
-            ReferencedAssemblies = refAssemblies.ToArray();
-            RazorEngine = razorEngine;
             ContentReader = contentReader;
         }
 
@@ -170,20 +137,16 @@ namespace EmailModule
             using (var codeProvider = new CSharpCodeProvider())
             {
                 var compilerParameter = new CompilerParameters(ReferencedAssemblies, assemblyName, false)
-                    {
-                        GenerateInMemory = true, 
-                        CompilerOptions = "/optimize"
-                    };
+                                            {
+                                                GenerateInMemory = true,
+                                                CompilerOptions = "/optimize"
+                                            };
 
-                var compilerResults = codeProvider.CompileAssemblyFromDom(
-                    compilerParameter, templateResults.Select(r => r.GeneratedCode).ToArray());
+                var compilerResults = codeProvider.CompileAssemblyFromDom(compilerParameter, templateResults.Select(r => r.GeneratedCode).ToArray());
 
                 if (compilerResults.Errors.HasErrors)
                 {
-                    var compileExceptionMessage = string.Join(
-                        Environment.NewLine + Environment.NewLine,
-                        compilerResults.Errors.OfType<CompilerError>().Where(ce => !ce.IsWarning).Select(
-                            e => e.FileName + ":" + Environment.NewLine + e.ErrorText).ToArray());
+                    var compileExceptionMessage = string.Join(Environment.NewLine + Environment.NewLine, compilerResults.Errors.OfType<CompilerError>().Where(ce => !ce.IsWarning).Select(e => e.FileName + ":" + Environment.NewLine + e.ErrorText).ToArray());
 
                     throw new InvalidOperationException(compileExceptionMessage);
                 }
@@ -212,7 +175,7 @@ namespace EmailModule
             return new EmailTemplateModelWrapper(propertyMap);
         }
 
-        /*private static RazorTemplateEngine CreateRazorEngine()
+        private static RazorTemplateEngine CreateRazorEngine()
         {
             var host = new RazorEngineHost(new CSharpRazorCodeLanguage())
                            {
@@ -227,9 +190,9 @@ namespace EmailModule
             host.NamespaceImports.Add("System.Linq");
 
             return new RazorTemplateEngine(host);
-        }*/
+        }
 
-        /*private static IEnumerable<string> BuildReferenceList()
+        private static IEnumerable<string> BuildReferenceList()
         {
             var currentAssemblyLocation = typeof(EmailTemplateEngine).Assembly.CodeBase.Replace("file:///", string.Empty).Replace("/", "\\");
 
@@ -241,7 +204,7 @@ namespace EmailModule
                            "microsoft.csharp.dll",
                            currentAssemblyLocation
                        };
-        }*/
+        }
 
         private IEnumerable<KeyValuePair<string, IEmailTemplate>> CreateTemplateInstances(string templateName)
         {

@@ -11,7 +11,6 @@ using EmailModule;
 
 namespace ConsoleRunner
 {
-
     public class Program
     {
         public static void Main()
@@ -27,7 +26,7 @@ namespace ConsoleRunner
         public static void Execute(String templateLocation)
         {
             IEmailTemplateContentReader templateReader = new FileSystemEmailTemplateContentReader(templateLocation);
-            IEmailTemplateEngine templateEngine = new EmailTemplateEngine(templateReader, new RazorWrapper(), RazorWrapper.BuildReferenceList());
+            IEmailTemplateEngine templateEngine = new EmailTemplateEngine(templateReader);
 
             IEmailSender sender = new EmailSender
             {
@@ -80,85 +79,5 @@ namespace ConsoleRunner
         public string Name { get; set; }
 
         public string VerificationUri { get; set; }
-    }
-
-    public class RazorWrapper : IDoWhatRazorDoes
-    {
-        private static readonly RazorTemplateEngine RazorEngine = CreateRazorEngine();
-
-        private static RazorTemplateEngine CreateRazorEngine()
-        {
-            var host = new RazorEngineHost(new CSharpRazorCodeLanguage())
-            {
-                DefaultBaseClass = typeof(EmailTemplate).FullName,
-                DefaultNamespace = "TempCompiledTemplates"
-            };
-
-            host.NamespaceImports.Add("System");
-            host.NamespaceImports.Add("System.Collections");
-            host.NamespaceImports.Add("System.Collections.Generic");
-            host.NamespaceImports.Add("System.Dynamic");
-            host.NamespaceImports.Add("System.Linq");
-
-            return new RazorTemplateEngine(host);
-        }
-
-        public static string AssemblyDirectory
-        {
-            get
-            {
-                var codeBase = Assembly.GetExecutingAssembly().CodeBase;
-                var uri = new UriBuilder(codeBase);
-                var path = Uri.UnescapeDataString(uri.Path);
-                return Path.GetDirectoryName(path);
-            }
-        }
-
-        public static IEnumerable<string> BuildReferenceList()
-        {
-            //var currentAssemblyLocation = typeof(EmailTemplateEngine).Assembly.CodeBase.Replace("file:///", string.Empty).Replace("/", "\\");
-
-            return new List<string>
-                       {
-                           "mscorlib.dll",
-                           "system.dll",
-                           "system.core.dll",
-                           "microsoft.csharp.dll",
-                           Assembly.GetExecutingAssembly().Location
-                       };
-        }
-
-        public SimplifiedParserResults GenerateCode(TextReader input)
-        {
-            return SimplifiedResults(RazorEngine.GenerateCode(input));
-        }
-
-        public SimplifiedParserResults GenerateCode(TextReader input, CancellationToken? cancelToken)
-        {
-            return SimplifiedResults(RazorEngine.GenerateCode(input, cancelToken));
-        }
-
-        public SimplifiedParserResults GenerateCode(TextReader input, string className, string rootNamespace, string sourceFileName)
-        {
-            return SimplifiedResults(RazorEngine.GenerateCode(input, className, rootNamespace, sourceFileName));
-        }
-
-        private SimplifiedParserResults SimplifiedResults(GeneratorResults generatorResults)
-        {
-            var simplifiedResults = new SimplifiedParserResults
-            {
-                ParserErrors = new List<AltRazorError>()
-            };
-
-            generatorResults.ParserErrors.ToList()
-                .ForEach(e => simplifiedResults.ParserErrors.Add(new AltRazorError
-                {
-                    Location = e.Location.ToString(),
-                    Message = e.Message
-                }
-                    ));
-
-            return simplifiedResults;
-        }
     }
 }

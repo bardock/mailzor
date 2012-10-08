@@ -24,7 +24,7 @@ namespace Mvc3TestApp.Controllers
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult SendEmail()
         {
             _mailzor.SendMail("TaskNotificationMessage",
                 new TaskNotificationMessage
