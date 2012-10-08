@@ -75,7 +75,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\lib\System.Web.Razor.dll</HintPath>
       <Private>True</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -133,5 +133,18 @@
   <Target Name="BeforeBuild">
   </Target>
   -->
+  
+  <Target Name="AfterBuild" Condition="(($(MSBuildTargets) == '') Or ($(MSBuildTargets) == 'CSharp')) And '$(OS)' == 'Windows_NT'">
+    <CreateItem Include="@(ReferenceCopyLocalPaths)" Condition="'%(Extension)'=='.dll'">
+      <Output ItemName="AssembliesToMerge" TaskParameter="Include" />
+    </CreateItem>
+
+    <GetReferenceAssemblyPaths BypassFrameworkInstallChecks="False" TargetFrameworkMoniker=".NETFramework,Version=$(TargetFrameworkVersion)">
+        <Output TaskParameter="FullFrameworkReferenceAssemblyPaths" PropertyName="FrameworkReferenceAssemblyPath" />
+    </GetReferenceAssemblyPaths>
+    <exec command="&quot;$(MSBuildProjectDirectory)\..\ThirdParty\Ilmerge\ILMerge.exe&quot; /internalize /keyfile:$(AssemblyOriginatorKeyFile) /out:@(MainAssembly)  &quot;@(IntermediateAssembly)&quot; @(AssembliesToMerge->'&quot;%(FullPath)&quot;', ' ')" Condition=" '$(TargetFrameworkVersion)' == 'v3.5'" />
+    <exec command="&quot;$(MSBuildProjectDirectory)\..\ThirdParty\Ilmerge\ILMerge.exe&quot; /internalize /keyfile:$(AssemblyOriginatorKeyFile) /out:@(MainAssembly) /targetplatform:&quot;v4,$(FrameworkReferenceAssemblyPath).&quot; &quot;@(IntermediateAssembly)&quot; @(AssembliesToMerge->'&quot;%(FullPath)&quot;', ' ')" Condition=" '$(TargetFrameworkVersion)' == 'v4.0'" />
+    <delete files="@(ReferenceCopyLocalPaths->'$(OutDir)%(DestinationSubDirectory)%(Filename)%(Extension)')" />
+  </Target>
 
 </Project>

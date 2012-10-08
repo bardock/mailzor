@@ -44,7 +44,7 @@ namespace ConsoleRunner
         private static SmtpClient RealSmtpClient()
         {
             // replace this with your own mail server
-            return new SmtpClient("10.1.0.82", 25);
+            return new SmtpClient("127.0.0.1", 25);
         }
 
         private static SmtpClient CreateSmtpClientWhichDropsInLocalFileSystem()
