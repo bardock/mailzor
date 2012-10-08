@@ -1,6 +1,6 @@
 # mailzor
 
-Is a basic utility class to help generate and send emails using the Razor view engine to create email templates, quickly pluggable into your .NET app.
+Mailzor is a basic utility library to help generate and send emails using the Razor view engine to populate email templates, designed to be quickly pluggable into your .NET app.
 
 The original idea for this is from , with the 
 
@@ -19,7 +19,7 @@ The original idea for this is from , with the
 
 ## Testing
 
-In the repository open \ExperienceTesting\Mvc4TestApp\Mvc4TestApp.sln - it makes use of the nuget package.
+In the repository open \ExperienceTesting\Mvc4TestApp\Mvc4TestApp.sln - it makes use of the nuget package. It's also an example of the MailzorModule Autofac wireup logic.
 
 Have [smpt4dev](http://smtp4dev.codeplex.com/) running or configure it to a real mail server and see it deliver a test message.
 
