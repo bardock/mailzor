@@ -9,14 +9,20 @@ The original idea for this is from , with the
  - Original code
    - [EmailTemplate.zip]( http://media.kazimanzurrashid.s3.amazonaws.com/EmailTemplate.zip )
 
-### Limitations
-  One right now is compiled dependency on System.Web.Razor 2.0.20126.16343 which is bundled with the package, see troubleshooting section at the bottom.
-
 ## NuGet
 
+ **Version 1.0.0.10**
+ 
  Get it from [nuget.org/packages/mailzor](https://nuget.org/packages/mailzor) or via Package Manager Console
  
   > *PM> Install-Package mailzor*
+
+## Testing
+
+
+ - Functions with:
+   - Razor 1.0 in ASP.NET MVC 3
+   - Razor 2.0 in ASP.NET MVC 4
 
 # Usage
 
@@ -37,7 +43,7 @@ Using an Autofac module (or just using this registration code in your compositio
 	builder.RegisterModule(new MailzorModule 
 		{ 
 			TemplatesDirectory = @"..\Templates",
-			SmtpServerIp = "10.0.0.99", // your smtp server
+			SmtpServerIp = "127.0.0.1", // your smtp server
 			SmtpServerPort = 25
 		});
 
@@ -84,13 +90,15 @@ Using an Autofac module (or just using this registration code in your compositio
  - A single entry point via `IEmailSystem`
  - Send message via `SendMail` on `IEmailSystem`
  - Some additional template loading checking, to ensure they're available and that it reports when it can't find them (in particular which template it couldn't find).
+
+
+## Older version
  
-## Troubleshooting
- - Because this library takes a fixed dependency on a version of 'System.Web.Razor' version: 2.0.20126.16343 so if you see an exception that's references a 'WriteAttribute' check for [exception image](http://yfrog.com/kksyjsp)
-   - *.config binding redirects for System.Web.Razor
-   - Any conflicting versions of System.Web.Razor
- 
-	> 	The name 'WriteAttribute' does not exist in the current context
-	
+If you tried this prior to 1.0.0.10 there was an issue with incompatible razor versions, more info [here](https://github.com/NickJosevski/mailzor/blob/master/PriorBugs.md).
+
 ## License
 Licensed under the MIT license.
+
+
+
+
