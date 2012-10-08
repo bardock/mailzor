@@ -22,9 +22,9 @@ Import-Module .\teamcity.psm1
 
 FormatTaskName (("-"*25) + "[{0}]" + ("-"*25))
 
-Task Default -Depends BuildDaedalusEverything
+Task Default -Depends BuildEverything
 
-Task BuildDaedalusEverything -Depends Clean, Build
+Task BuildEverything -Depends Clean, Build
 
 Task Build -Depends Clean, Init {	
 

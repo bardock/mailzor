@@ -6,7 +6,6 @@ using EmailModule;
 
 namespace ConsoleRunner
 {
-
     public class Program
     {
         public static void Main()
