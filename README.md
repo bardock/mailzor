@@ -19,10 +19,18 @@ The original idea for this is from , with the
 
 ## Testing
 
+In the repository open \ExperienceTesting\Mvc4TestApp\Mvc4TestApp.sln - it makes use of the nuget package.
+
+Have [smpt4dev](http://smtp4dev.codeplex.com/) running or configure it to a real mail server and see it deliver a test message.
 
  - Functions with:
    - Razor 1.0 in ASP.NET MVC 3
    - Razor 2.0 in ASP.NET MVC 4
+
+## Building from source
+
+Run build.bat which calls out to a [psake](http://en.wikipedia.org/wiki/Psake) script `mailzor-build.ps1`. The dependant Razor assembly will be ilmerged as part of the build.
+
 
 # Usage
 
