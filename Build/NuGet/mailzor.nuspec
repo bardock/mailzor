@@ -3,7 +3,8 @@
   <metadata>
     <id>mailzor</id>
 	<title>mailzor</title>
-    <version>1.0.0.8</version>
+    <version>1.0.0.9</version>
+	<projectUrl>http://nickjosevski.github.com/mailzor</projectUrl>
     <authors>Kazi Manzur Rashid, Nick Josevski</authors>
     <language>en-US</language>
     <description>A basic razor template building and email sending library. Limitation right now is a hard coded dependency on System.Web.Razor 2.0.20126.16343 which is bundled with this assembly.</description>
