@@ -1,35 +1,41 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Mailzor by NickJosevski</title>
-
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <title>Mailzor by NickJosevski</title>
   </head>
+
   <body>
-    <div class="wrapper">
-      <header>
-        <h1>Mailzor</h1>
-        <p>Using the Razor view engine to create email templates, quickly pluggable into your .NET app.</p>
-        <p class="view"><a href="https://github.com/NickJosevski/mailzor">View the Project on GitHub <small>NickJosevski/mailzor</small></a></p>
-        <ul>
-          <li><a href="https://github.com/NickJosevski/mailzor/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/NickJosevski/mailzor/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/NickJosevski/mailzor">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>mailzor</h1>
+    <div id="container">
+      <div class="inner">
 
-<p>Is a basic utility class to help generate and send emails using the Razor view engine to create email templates, quickly pluggable into your .NET app.</p>
+        <header>
+          <h1>Mailzor</h1>
+          <h2>Using the Razor view engine to create email templates, quickly pluggable into your .NET app.</h2>
+        </header>
 
-<p>The original idea for this is from , with the </p>
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/NickJosevski/mailzor/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/NickJosevski/mailzor/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/NickJosevski/mailzor" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>mailzor</h1>
+
+<p>Mailzor is a basic utility library to help generate and send emails using the Razor view engine to populate email templates, designed to be quickly pluggable into your .NET app.</p>
+
+<p>The original idea for this is from <a href="https://twitter.com/manzurrashid">Kazi Manzur Rashid</a>, with the...</p>
 
 <ul>
 <li>Original blog post covering it here:
@@ -44,17 +50,43 @@
 <li><a href="http://media.kazimanzurrashid.s3.amazonaws.com/EmailTemplate.zip">EmailTemplate.zip</a></li>
 </ul>
 </li>
-</ul><h3>Limitations</h3>
+</ul><h2>This fork</h2>
 
-<p>One right now is compiled dependency on System.Web.Razor 2.0.20126.16343 which is bundled with the package, see troubleshooting section at the bottom.</p>
+<p>Is about making it easier to get up and running, via a nuget package and support for IoC wireup.</p>
 
-<h2>NuGet</h2>
+<ul>
+<li>A single entry point via <code>IEmailSystem</code>
+</li>
+<li>Send message via <code>SendMail</code> on <code>IEmailSystem</code>
+</li>
+<li>Some additional template loading checking, to ensure they're available and that it reports when it can't find them (in particular which template it couldn't find).</li>
+</ul><h2>NuGet</h2>
+
+<p><strong>Current Version: 1.0.0.11</strong></p>
 
 <p>Get it from <a href="https://nuget.org/packages/mailzor">nuget.org/packages/mailzor</a> or via Package Manager Console</p>
 
 <blockquote>
 <p><em>PM&gt; Install-Package mailzor</em></p>
 </blockquote>
+
+<h2>Testing</h2>
+
+<p>In the repository open \ExperienceTesting\Mvc4TestApp\Mvc4TestApp.sln - it makes use of the nuget package. It's also an example of the MailzorModule Autofac wireup logic.</p>
+
+<p>Have <a href="http://smtp4dev.codeplex.com/">smpt4dev</a> running or configure it to a real mail server and see it deliver a test message.</p>
+
+<ul>
+<li>Functions with:
+
+<ul>
+<li>Razor 1.0 in ASP.NET MVC 3</li>
+<li>Razor 2.0 in ASP.NET MVC 4</li>
+</ul>
+</li>
+</ul><h2>Building from source</h2>
+
+<p>Run build.bat which calls out to a <a href="http://en.wikipedia.org/wiki/Psake">psake</a> script <code>mailzor-build.ps1</code>. The dependant Razor assembly will be ilmerged as part of the build.</p>
 
 <h1>Usage</h1>
 
@@ -75,7 +107,7 @@ mailzor.SendMail(
 <pre><code>builder.RegisterModule(new MailzorModule 
     { 
         TemplatesDirectory = @"..\Templates",
-        SmtpServerIp = "10.0.0.99", // your smtp server
+        SmtpServerIp = "127.0.0.1", // your smtp server
         SmtpServerPort = 25
     });
 </code></pre>
@@ -105,13 +137,13 @@ mailzor.SendMail(
                     {
                         CreateClientFactory = () 
                             =&gt; new SmtpClientWrapper(new SmtpClient(SmtpServerIp, SmtpServerPort))
-                    })
+                    },
+                    DefaultFromAddress = "sourceOfEmails@domain.com")
             .As&lt;IEmailSender&gt;();
 
         builder
             .Register(
                 c =&gt; new EmailSubsystem(
-                    "sending@from-site.com", 
                     c.Resolve&lt;IEmailTemplateEngine&gt;(), 
                     c.Resolve&lt;IEmailSender&gt;()))
             .As&lt;IEmailSystem&gt;();
@@ -119,38 +151,30 @@ mailzor.SendMail(
 }
 </code></pre>
 
-<h2>Changes in this fork</h2>
+<h2>Change Log</h2>
 
-<ul>
-<li>A single entry point via <code>IEmailSystem</code>
-</li>
-<li>Send message via <code>SendMail</code> on <code>IEmailSystem</code>
-</li>
-<li>Some additional template loading checking, to ensure they're available and that it reports when it can't find them (in particular which template it couldn't find).</li>
-</ul><h2>Troubleshooting</h2>
+<p>Version 1.0.0.11 - Added operational default email support</p>
 
-<ul>
-<li>
-<p>Because this library takes a fixed dependency on a version of 'System.Web.Razor' version: 2.0.20126.16343 so if you see an exception that's references a 'WriteAttribute' check for <a href="http://yfrog.com/kksyjsp">exception image</a></p>
+<p>Version 1.0.0.10 - Stablised via ilmerge</p>
 
-<ul>
-<li>*.config binding redirects for System.Web.Razor</li>
-<li>Any conflicting versions of System.Web.Razor</li>
-</ul>
-<blockquote>
-<p>The name 'WriteAttribute' does not exist in the current context</p>
-</blockquote>
-</li>
-</ul><h2>License</h2>
+<p>Version 1.0.0.7 - Operational with some limitations.</p>
+
+<h2>Older version</h2>
+
+<p>If you tried this prior to 1.0.0.10 there was an issue with incompatible razor versions, more info <a href="https://github.com/NickJosevski/mailzor/blob/master/PriorBugs.md">here</a>.</p>
+
+<h2>License</h2>
 
 <p>Licensed under the MIT license.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/NickJosevski">NickJosevski</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+        </section>
+
+        <footer>
+          Mailzor is maintained by <a href="https://github.com/NickJosevski">NickJosevski</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
-    
   </body>
 </html>
