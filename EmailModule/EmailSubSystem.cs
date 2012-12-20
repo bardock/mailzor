@@ -2,13 +2,11 @@ namespace EmailModule
 {
     public class EmailSubsystem : IEmailSystem
     {
-        public EmailSubsystem(string fromAddress, IEmailTemplateEngine templateEngine, IEmailSender sender)
+        public EmailSubsystem(IEmailTemplateEngine templateEngine, IEmailSender sender)
         {
-            Invariant.IsNotBlank(fromAddress, "fromAddress");
             Invariant.IsNotNull(templateEngine, "templateEngine");
             Invariant.IsNotNull(sender, "sender");
 
-            FromAddress = fromAddress;
             TemplateEngine = templateEngine;
             Sender = sender;
         }
@@ -16,8 +14,6 @@ namespace EmailModule
         protected IEmailTemplateEngine TemplateEngine { get; private set; }
 
         protected IEmailSender Sender { get; private set; }
-
-        protected string FromAddress { get; private set; }
 
         /// <summary>
         /// Send a mail message

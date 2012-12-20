@@ -16,9 +16,12 @@ namespace EmailModule
 
         public Func<Email, MailMessage> CreateMailMessageFactory { get; set; }
 
+        public string DefaultFromAddress { get; set; }
+
         public void Send(Email email)
         {
             Invariant.IsNotNull(email, "email element was unable to be built correctly");
+            email.From = string.IsNullOrWhiteSpace(email.From) ? DefaultFromAddress : email.From;
             Invariant.IsNotNull(email.From, "The supplied 'From' address cannot be null.");
 
             using (var message = CreateDefaultMailMessageFactory()(email))

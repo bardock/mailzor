@@ -19,7 +19,7 @@ Is about making it easier to get up and running, via a nuget package and support
 
 ## NuGet
 
- **Version 1.0.0.10**
+ **Current Version: 1.0.0.11**
  
  Get it from [nuget.org/packages/mailzor](https://nuget.org/packages/mailzor) or via Package Manager Console
  
@@ -88,18 +88,27 @@ Using an Autofac module (or just using this registration code in your compositio
 						{
 							CreateClientFactory = () 
 								=> new SmtpClientWrapper(new SmtpClient(SmtpServerIp, SmtpServerPort))
-						})
+						},
+						DefaultFromAddress = "sourceOfEmails@domain.com")
 				.As<IEmailSender>();
 	
 			builder
 				.Register(
 					c => new EmailSubsystem(
-						"sending@from-site.com", 
 						c.Resolve<IEmailTemplateEngine>(), 
 						c.Resolve<IEmailSender>()))
 				.As<IEmailSystem>();
 		}
 	}
+	
+
+## Change Log
+
+ Version 1.0.0.11 - Added operational default email support
+ 
+ Version 1.0.0.10 - Stablised via ilmerge
+
+Version 1.0.0.7 - Operational with some limitations.
 
 ## Older version
  

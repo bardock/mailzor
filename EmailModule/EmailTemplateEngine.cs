@@ -243,7 +243,7 @@ namespace EmailModule
 
             Invariant.IsNotEmpty(
                 templateTypes, 
-                string.Format(CultureInfo.CurrentUICulture, "Templates could not be loaded, check the name supplied matches the filename, missing tempalte was: {0}", templateName));
+                string.Format(CultureInfo.CurrentUICulture, "Templates could not be loaded, check the name supplied matches the filename, missing template was: {0}", templateName));
 
             return templateTypes;
         }

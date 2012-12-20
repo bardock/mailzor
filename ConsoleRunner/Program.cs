@@ -29,7 +29,7 @@ namespace ConsoleRunner
                 CreateClientFactory = () => new SmtpClientWrapper(RealSmtpClient())
             };
 
-            var subsystem = new EmailSubsystem("source@somedomain.com", templateEngine, sender);
+            var subsystem = new EmailSubsystem(templateEngine, sender);
 
             subsystem.SendMail(
                 "NewTaskEmailCommand",
