@@ -18,10 +18,13 @@ namespace EmailModule
 
         public string DefaultFromAddress { get; set; }
 
+        public string DefaultFromDisplayName { get; set; }
+
         public void Send(Email email)
         {
             Invariant.IsNotNull(email, "email element was unable to be built correctly");
             email.From = string.IsNullOrWhiteSpace(email.From) ? DefaultFromAddress : email.From;
+            email.FromDisplayName = string.IsNullOrWhiteSpace(email.FromDisplayName) ? DefaultFromDisplayName : email.FromDisplayName;
             Invariant.IsNotNull(email.From, "The supplied 'From' address cannot be null.");
 
             using (var message = CreateDefaultMailMessageFactory()(email))
@@ -42,7 +45,7 @@ namespace EmailModule
         {
             return email =>
                        {
-                           var message = new MailMessage { From = new MailAddress(email.From), Subject = email.Subject };
+                           var message = new MailMessage { From = new MailAddress(email.From, email.FromDisplayName), Subject = email.Subject };
 
                            if (!string.IsNullOrEmpty(email.Sender))
                            {

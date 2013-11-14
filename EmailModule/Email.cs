@@ -17,6 +17,8 @@ namespace EmailModule
 
         public string From { get; set; }
 
+        public string FromDisplayName { get; set; }
+
         public string Sender { get; set; }
 
         public ICollection<string> To { get; private set; }
