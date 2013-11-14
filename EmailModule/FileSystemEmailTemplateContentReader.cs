@@ -36,7 +36,7 @@ namespace EmailModule
 
         protected string FileExtension { get; private set; }
 
-        public string Read(string templateName, string suffix)
+        public virtual string Read(string templateName, string suffix)
         {
             Invariant.IsNotBlank(templateName, "templateName");
 
