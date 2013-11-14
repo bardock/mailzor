@@ -134,12 +134,17 @@ namespace EmailModule
                 throw new InvalidOperationException(parseExceptionMessage);
             }
 
+            string tempPath = Path.GetTempPath();
+            string outputFile = Path.Combine(tempPath, assemblyName);
+
             using (var codeProvider = new CSharpCodeProvider())
             {
                 var compilerParameter = new CompilerParameters(ReferencedAssemblies, assemblyName, false)
                                             {
                                                 GenerateInMemory = true,
-                                                CompilerOptions = "/optimize"
+                                                CompilerOptions = "/optimize",
+                                                OutputAssembly = outputFile,
+                                                TempFiles = new TempFileCollection(tempPath, false)
                                             };
 
                 var compilerResults = codeProvider.CompileAssemblyFromDom(compilerParameter, templateResults.Select(r => r.GeneratedCode).ToArray());
